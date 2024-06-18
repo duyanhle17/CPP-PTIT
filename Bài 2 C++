@@ -1,0 +1,230 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Vemaybay
+{
+private:
+   string tenchuyen;
+   string ngaybay;
+   double giave;
+
+public:
+
+   Vemaybay() : tenchuyen(""), ngaybay(""), giave(0.0) {}
+   Vemaybay(string tenchuyen, string ngaybay, double giave) : tenchuyen(tenchuyen), ngaybay(ngaybay), giave(giave) {}
+
+   ~Vemaybay() {}
+
+   void nhap()
+   {
+      cout << "Nhap ten chuyen: ";
+      cin.ignore();
+      getline(cin, tenchuyen);
+      cout << "Nhap ngay bay (dd/mm/yyyy): ";
+      getline(cin, ngaybay);
+      cout << "Nhap gia ve: ";
+      cin >> giave;
+   }
+
+   void xuat() const
+   {
+      cout << "Ten chuyen: " << tenchuyen << ", Ngay bay: " << ngaybay << ", Gia ve: " << giave << endl;
+   }
+
+   double getgiave() const
+   {
+      return giave;
+   }
+};
+
+class Nguoi
+{
+protected:
+   string hoten;
+   string gioitinh;
+   int tuoi;
+
+public:
+
+   Nguoi() : hoten(""), gioitinh(""), tuoi(0) {}
+   Nguoi(string hoten, string gioitinh, int tuoi) : hoten(hoten), gioitinh(gioitinh), tuoi(tuoi) {}
+
+
+   ~Nguoi() {}
+
+   void nhap()
+   {
+      cout << "Nhap ho ten: ";
+      cin.ignore();
+      getline(cin, hoten);
+      cout << "Nhap gioi tinh: ";
+      getline(cin, gioitinh);
+      cout << "Nhap tuoi: ";
+      cin >> tuoi;
+   }
+
+   void xuat() const
+   {
+      cout << "Ho ten: " << hoten << ", Gioi tinh: " << gioitinh << ", Tuoi: " << tuoi << endl;
+   }
+};
+
+class Hanhkhach : public Nguoi
+{
+private:
+   Vemaybay *ve;
+   int soluong;
+
+public:
+   Hanhkhach() : Nguoi(), ve(nullptr), soluong(0) {}
+   Hanhkhach(string hoten, string gioitinh, int tuoi, int soluong) : Nguoi(hoten, gioitinh, tuoi), soluong(soluong)
+   {
+      ve = new Vemaybay[soluong];
+   }
+
+   ~Hanhkhach()
+   {
+      delete[] ve;
+   }
+
+   // Hàm nhập
+   void nhap()
+   {
+      Nguoi::nhap();
+      cout << "Nhap so luong ve: ";
+      cin >> soluong;
+      ve = new Vemaybay[soluong];
+      for (int i = 0; i < soluong; ++i)
+      {
+         cout << "Nhap thong tin ve thu " << i + 1 << ":" << endl;
+         ve[i].nhap();
+      }
+   }
+
+   void xuat() const
+   {
+      Nguoi::xuat();
+      for (int i = 0; i < soluong; ++i)
+      {
+         cout << "Thong tin ve thu " << i + 1 << ":" << endl;
+         ve[i].xuat();
+      }
+   }
+
+   double tongtien() const
+   {
+      double total = 0;
+      for (int i = 0; i < soluong; ++i)
+      {
+         total += ve[i].getgiave();
+      }
+      return total;
+   }
+};
+
+bool compare(const Hanhkhach &a, const Hanhkhach &b)
+{
+   return a.tongtien() > b.tongtien();
+}
+
+int main()
+{
+   int n;
+   cout << "Nhap so luong hanh khach: ";
+   cin >> n;
+
+   vector<Hanhkhach> danhSachHanhKhach(n);
+
+   for (int i = 0; i < n; ++i)
+   {
+      cout << "Nhap thong tin hanh khach thu " << i + 1 << ":" << endl;
+      danhSachHanhKhach[i].nhap();
+   }
+
+   cout << "\nDanh sach hanh khach va tong tien phai tra:\n";
+   for (const auto &hk : danhSachHanhKhach)
+   {
+      hk.xuat();
+      cout << "Tong tien phai tra: " << hk.tongtien() << endl;
+   }
+
+   sort(danhSachHanhKhach.begin(), danhSachHanhKhach.end(), compare);
+
+   cout << "\nDanh sach hanh khach sau khi sap xep theo tong tien giam dan:\n";
+   for (const auto &hk : danhSachHanhKhach)
+   {
+      hk.xuat();
+      cout << "Tong tien phai tra: " << hk.tongtien() << endl;
+   }
+
+   return 0;
+}
+
+//Input
+
+
+// Nhap so luong hanh khach: 3
+// Nhap thong tin hanh khach thu 1:
+// Nhap ho ten: Le Duy Anh
+// Nhap gioi tinh: Nam
+// Nhap tuoi: 19
+// Nhap so luong ve: 1
+// Nhap thong tin ve thu 1:
+// Nhap ten chuyen: chuyen1
+// Nhap ngay bay (dd/mm/yyyy): 15/02/2024
+// Nhap gia ve: 1000
+// Nhap thong tin hanh khach thu 2:
+// Nhap ho ten: Le Chi Duc
+// Nhap gioi tinh: Nam
+// Nhap tuoi: 2
+// Nhap so luong ve: 2
+// Nhap thong tin ve thu 1:
+// Nhap ten chuyen: chuyen2
+// Nhap ngay bay (dd/mm/yyyy): 26/05/2024
+// Nhap gia ve: 100
+// Nhap thong tin ve thu 2:
+// Nhap ten chuyen: chuyen3
+// Nhap ngay bay (dd/mm/yyyy): 22/04/2024
+// Nhap gia ve: 250
+// Nhap thong tin hanh khach thu 3:
+// Nhap ho ten: Pham Thi Hao
+// Nhap gioi tinh: Nu
+// Nhap tuoi: 40
+// Nhap so luong ve: 1
+// Nhap thong tin ve thu 1:
+// Nhap ten chuyen: chuyen4
+// Nhap ngay bay (dd/mm/yyyy): 05/05/2024
+// Nhap gia ve: 460
+
+
+//Output
+
+// Danh sach hanh khach va tong tien phai tra:
+// Ho ten: Le Duy Anh, Gioi tinh: Nam, Tuoi: 19
+// Thong tin ve thu 1:
+// Ten chuyen: chuyen1, Ngay bay: 15/02/2024, Gia ve: 1000
+// Tong tien phai tra: 1000
+// Ho ten: Le Chi Duc, Gioi tinh: Nam, Tuoi: 2
+// Thong tin ve thu 1:
+// Ten chuyen: chuyen2, Ngay bay: 26/05/2024, Gia ve: 100
+// Thong tin ve thu 2:
+// Ten chuyen: chuyen3, Ngay bay: 22/04/2024, Gia ve: 250
+// Tong tien phai tra: 350
+// Ho ten: Ph�am Thi Hao, Gioi tinh: Nu, Tuoi: 40
+// Thong tin ve thu 1:
+// Ten chuyen: chuyen4, Ngay bay: 05/05/2024, Gia ve: 460
+// Tong tien phai tra: 460
+
+// Danh sach hanh khach sau khi sap xep theo tong tien giam dan:
+// Ho ten: Le Duy Anh, Gioi tinh: Nam, Tuoi: 19
+// Thong tin ve thu 1:
+// Ten chuyen: chuyen1, Ngay bay: 15/02/2024, Gia ve: 1000
+// Tong tien phai tra: 1000
+// Ho ten: Ph�am Thi Hao, Gioi tinh: Nu, Tuoi: 40
+// Thong tin ve thu 1:
+
+
